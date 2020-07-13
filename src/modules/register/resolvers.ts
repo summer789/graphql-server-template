@@ -1,12 +1,8 @@
 import { IResolvers } from 'graphql-tools';
 import * as bcryptjs from 'bcryptjs';
-import { User } from './entity/User';
+import { User } from '../../entity/User';
 
 export const resolvers: IResolvers = {
-  Query: {
-    hello: (_, { name }: GQL.IHelloOnQueryArguments) =>
-      `Hello ${name || 'World'}`,
-  },
   Mutation: {
     register: async (
       _,

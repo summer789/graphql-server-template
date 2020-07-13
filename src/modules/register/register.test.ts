@@ -1,8 +1,7 @@
-import { startServer } from '..';
+import { startServer } from '../../startServer';
 import { request } from 'graphql-request';
-import { HOST } from './constants';
 import 'cross-fetch/polyfill';
-import { User } from '../entity/User';
+import { User } from '../../entity/User';
 import { AddressInfo } from 'net';
 
 let getHost = () => '';

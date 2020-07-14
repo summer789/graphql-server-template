@@ -1,6 +1,20 @@
 import { IResolvers } from 'graphql-tools';
+import * as yup from 'yup';
 import * as bcryptjs from 'bcryptjs';
 import { User } from '../../entity/User';
+import { asyncError } from '../../utils/asyncError';
+import { formatYupError } from '../../utils/formatYupError';
+import {
+  emailAlready,
+  emailNotLongEnough,
+  invalidEmail,
+  passwordNotLongEnough,
+} from './errorMessage';
+
+const schema = yup.object().shape({
+  email: yup.string().min(3, emailNotLongEnough).max(255).email(invalidEmail),
+  password: yup.string().min(3, passwordNotLongEnough).max(255),
+});
 
 export const resolvers: IResolvers = {
   Mutation: {
@@ -8,13 +22,31 @@ export const resolvers: IResolvers = {
       _,
       { email, password }: GQL.IRegisterOnMutationArguments,
     ) => {
+      const [error] = await asyncError<any, yup.ValidationError>(
+        schema.validate({ email, password }, { abortEarly: false }),
+      );
+      if (error) {
+        return formatYupError(error);
+      }
+      const userAlreadyExists = await User.findOne({
+        where: { email },
+        select: ['id'],
+      });
+      if (userAlreadyExists) {
+        return [
+          {
+            path: 'email',
+            message: emailAlready,
+          },
+        ];
+      }
       const hashedPassword = await bcryptjs.hash(password, 10);
       const user = User.create({
         email,
         password: hashedPassword,
       });
       await user.save();
-      return true;
+      return null;
     },
   },
 };

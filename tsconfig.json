@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "lib": [
-      "es5",
-      "es6",
-      "ESNext"
+      "ES5",
+      "ES6",
+      "ES2019",
     ],
-    "target": "ESNext",
+    "target": "ES2019",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./build",
@@ -18,7 +18,10 @@
     "experimentalDecorators": true,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
   },
   "exclude": [
     "node_modules"

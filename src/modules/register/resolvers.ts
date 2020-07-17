@@ -10,7 +10,7 @@ import {
   invalidEmail,
   passwordNotLongEnough,
 } from './errorMessage';
-import { createConfirmEmailLink } from '../../utils/createConfirEmailLink';
+import { createConfirmEmailLink } from '../../utils/createConfirEmailLink/createConfirEmailLink';
 import { Redis } from 'ioredis';
 
 const schema = yup.object().shape({

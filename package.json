@@ -7,7 +7,8 @@
     "test-server": "NODE_ENV=test ts-node --files src/index.ts",
     "test": "NODE_ENV=test jest --forceExit",
     "ci": "start-server-and-test test-server http://localhost:4000 test",
-    "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts"
+    "gen-schema-types2": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
+    "gen-schema-types": "ts-node --files src/scripts/createTypes"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -27,9 +28,11 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "@gql2ts/from-schema": "^2.0.0-4",
     "@graphql-tools/graphql-file-loader": "^6.0.12",
-    "@graphql-tools/load": "^6.0.12",
+    "@graphql-tools/load": "^6.0.14",
     "@graphql-tools/schema": "^6.0.12",
+    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "cross-fetch": "^3.0.5",
     "graphql-request": "^2.0.0",
@@ -42,7 +45,8 @@
     "yup": "^0.29.1"
   },
   "jest": {
-    "globalSetup":"./src/testSetup/callSetup.js",
+    "testEnvironment": "node",
+    "globalSetup": "./src/testSetup/callSetup.js",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },

@@ -1,46 +1,19 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as Redis from 'ioredis';
 import { GraphQLServer } from 'graphql-yoga';
-import { loadSchemaSync } from '@graphql-tools/load';
-import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
-import { addResolversToSchema } from '@graphql-tools/schema';
-import { mergeSchemas } from '@graphql-tools/merge';
+import { redis } from './redis';
+import { genSchema } from './utils/genSchema';
 import { createTypeOrmConnection } from './utils/createTypeOrmConnection';
-import { User } from './entity/User';
+import { confirmEmail } from './routes/confirEmail.ts/confirmEmail';
 
 export const startServer = async () => {
-  const folders = fs.readdirSync(path.join(__dirname, './modules'));
-  const schemas = folders.map((folder: string) => {
-    const { resolvers } = require(`./modules/${folder}/resolvers`);
-    const schema = loadSchemaSync(
-      path.join(__dirname, `./modules/${folder}/schema.graphql`),
-      {
-        loaders: [new GraphQLFileLoader()],
-      },
-    );
-    return addResolversToSchema({ resolvers, schema });
-  });
-
-  const redis = new Redis();
-
   const server = new GraphQLServer({
     context: ({ request }) => ({
       redis,
       url: `${request.protocol}://${request.get('host')}`,
     }),
-    schema: mergeSchemas({ schemas }),
+    schema: genSchema(),
   });
 
-  server.express.get('/confirm/:id', async (req, res) => {
-    const { id } = req.params;
-    const userId = await redis.get(id);
-    if (!userId) {
-      return res.send('invalid');
-    }
-    User.update({ id: userId }, { confirmed: true });
-    res.send('ok');
-  });
+  server.express.get('/confirm/:id', confirmEmail);
 
   await createTypeOrmConnection();
   const app = await server.start({

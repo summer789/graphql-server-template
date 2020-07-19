@@ -12,6 +12,7 @@ import {
 } from './errorMessage';
 import { createConfirmEmailLink } from '../../utils/createConfirEmailLink/createConfirEmailLink';
 import { Redis } from 'ioredis';
+import { sendEmail } from '../../utils/sendEmail';
 
 const schema = yup.object().shape({
   email: yup.string().min(3, emailNotLongEnough).max(255).email(invalidEmail),
@@ -23,7 +24,7 @@ export const resolvers: IResolvers<any, { redis: Redis; url: string }> = {
     register: async (
       _,
       { email, password }: GQL.IRegisterOnMutationArguments,
-      { redis },
+      { redis, url },
     ) => {
       const [error] = await asyncError<any, yup.ValidationError>(
         schema.validate({ email, password }, { abortEarly: false }),
@@ -49,7 +50,8 @@ export const resolvers: IResolvers<any, { redis: Redis; url: string }> = {
         password: hashedPassword,
       });
       await user.save();
-      const link = await createConfirmEmailLink('', user.id, redis);
+      const link = await createConfirmEmailLink(url, user.id, redis);
+      await sendEmail(email, link);
       return null;
     },
   },

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { GraphQLServer } from 'graphql-yoga';
 import { redis } from './redis';
 import { genSchema } from './utils/genSchema';

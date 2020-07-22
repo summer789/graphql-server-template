@@ -50,8 +50,8 @@ export const resolvers: IResolvers<any, { redis: Redis; url: string }> = {
         password: hashedPassword,
       });
       await user.save();
-      const link = await createConfirmEmailLink(url, user.id, redis);
-      await sendEmail(email, link);
+      // const link = await createConfirmEmailLink(url, user.id, redis);
+      // await sendEmail(email, link);
       return null;
     },
   },

@@ -7,7 +7,6 @@ import { addResolversToSchema } from '@graphql-tools/schema';
 
 export function genSchema() {
   const folders = fs.readdirSync(path.join(__dirname, '../modules'));
-  console.log(loadSchemaSync);
   const schemas = folders.map((folder: string) => {
     const { resolvers } = require(`../modules/${folder}/resolvers`);
     const schema = loadSchemaSync(

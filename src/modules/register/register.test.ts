@@ -9,7 +9,7 @@ import {
 } from './errorMessage';
 import { createTypeOrmConnection } from '../../utils/createTypeOrmConnection';
 
-const email = 'tom@a.com';
+const email = 'tom@111a.com';
 const password = 'abcdefd';
 
 const mutation = (e: string, p: string) => `

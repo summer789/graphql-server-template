@@ -10,7 +10,7 @@ const redis = new Redis();
 beforeAll(async () => {
   await createTypeOrmConnection();
   const user = await User.create({
-    email: 'yingqin.zyq111@alibaba-inc.com',
+    email: 'abc@1123.com',
     password: 'monian111',
   }).save();
   userId = user.id;

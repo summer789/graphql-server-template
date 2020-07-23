@@ -3,6 +3,7 @@ import { request } from 'graphql-request';
 import { invalidLogin, confirmEmailError } from './errorMessage';
 import { createTypeOrmConnection } from '../../utils/createTypeOrmConnection';
 import { User } from '../../entity/User';
+import { Connection } from 'typeorm';
 
 const registerMutation = (e: string, p: string) => `
 mutation {
@@ -29,9 +30,13 @@ async function login(e: string, p: string, expectMessage: any) {
   expect(response).toEqual(expectMessage);
 }
 
+let connection: Connection;
+
 beforeAll(async () => {
-  await createTypeOrmConnection(false);
+  connection = await createTypeOrmConnection(false);
 });
+
+afterAll(() => connection.close);
 
 describe('login', () => {
   test('email not found', async () => {

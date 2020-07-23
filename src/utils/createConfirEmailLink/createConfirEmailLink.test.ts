@@ -3,12 +3,16 @@ import axios from 'axios';
 import { createConfirmEmailLink } from './createConfirEmailLink';
 import { createTypeOrmConnection } from '../createTypeOrmConnection';
 import { User } from '../../entity/User';
+import { Connection } from 'typeorm';
 
 let userId: string;
 const redis = new Redis();
+let connection: Connection;
+
+afterAll(() => connection.close);
 
 beforeAll(async () => {
-  await createTypeOrmConnection();
+  connection = await createTypeOrmConnection();
   const user = await User.create({
     email: 'abc@1123.com',
     password: 'monian111',

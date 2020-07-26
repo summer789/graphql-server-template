@@ -24,6 +24,7 @@ mutation {
 `;
 
 const email = 'abc111@abc111.com';
+const password = '111111';
 
 async function login(e: string, p: string, expectMessage: any) {
   const response = await request(process.env.TEST_HOST, loginMutation(e, p));
@@ -40,14 +41,14 @@ afterAll(() => connection.close);
 
 describe('login', () => {
   test('email not found', async () => {
-    login(email, '111111', { login: [invalidLogin] });
+    login(email, password, { login: [invalidLogin] });
   });
 
   test('email not confirmed', async () => {
-    await request(process.env.TEST_HOST, registerMutation(email, '111111'));
-    await login(email, '111111', { login: [confirmEmailError] });
+    await request(process.env.TEST_HOST, registerMutation(email, password));
+    await login(email, password, { login: [confirmEmailError] });
     await User.update({ email }, { confirmed: true });
     await login(email, '2222', { login: [invalidLogin] });
-    await login(email, '111111', { login: null });
+    await login(email, password, { login: null });
   });
 });

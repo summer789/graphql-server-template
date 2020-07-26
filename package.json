@@ -5,7 +5,7 @@
   "scripts": {
     "start": "NODE_ENV=dev nodemon --exec ts-node --files src/index.ts",
     "test-server": "NODE_ENV=test ts-node --files src/index.ts",
-    "test": "NODE_ENV=test jest --forceExit",
+    "test": "NODE_ENV=test jest --forceExit --runInBand",
     "ci": "start-server-and-test test-server http://localhost:4000 test",
     "gen-schema-types2": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
     "gen-schema-types": "ts-node --files src/scripts/createTypes"

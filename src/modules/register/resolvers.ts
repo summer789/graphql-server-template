@@ -1,6 +1,5 @@
 import { IResolvers } from 'graphql-tools';
 import * as yup from 'yup';
-import * as bcryptjs from 'bcryptjs';
 import { User } from '../../entity/User';
 import { asyncError } from '../../utils/asyncError';
 import { formatYupError } from '../../utils/formatYupError';
@@ -44,10 +43,9 @@ export const resolvers: IResolvers<any, { redis: Redis; url: string }> = {
           },
         ];
       }
-      const hashedPassword = await bcryptjs.hash(password, 10);
       const user = User.create({
         email,
-        password: hashedPassword,
+        password,
       });
       await user.save();
       // const link = await createConfirmEmailLink(url, user.id, redis);

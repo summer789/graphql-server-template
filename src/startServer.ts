@@ -22,14 +22,14 @@ export const startServer = async () => {
 
   server.express.use(
     session({
-      name: 'sessionId',
+      name: 'tokenId',
       store: new RedisStore({ client: redis }),
       secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'prod',
+        secure: false,
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },
     }),
@@ -37,13 +37,14 @@ export const startServer = async () => {
 
   server.express.get('/confirm/:id', confirmEmail);
 
-  await createTypeOrmConnection();
+  await createTypeOrmConnection(false);
   const app = await server.start({
-    cors: {
-      credentials: true,
-      origin: 'localhost:3000',
-    },
-    port: process.env.NODE_ENV === 'test' ? 0 : 4000,
+    // cors: {
+    //   credentials: true,
+    //   origin: 'http://127.0.0.1:4000',
+    // },
+    cors: false,
+    port: process.env.NODE_ENV === 'test' ? 3000 : 4000,
   });
   console.log(
     `Server is running on localhost:${(app.address() as AddressInfo).port}`,

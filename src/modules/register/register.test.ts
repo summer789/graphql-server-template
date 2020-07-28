@@ -1,5 +1,3 @@
-import { request } from 'graphql-request';
-import 'cross-fetch/polyfill';
 import { User } from '../../entity/User';
 import {
   emailAlready,
@@ -9,18 +7,10 @@ import {
 } from './errorMessage';
 import { createTypeOrmConnection } from '../../utils/createTypeOrmConnection';
 import { Connection } from 'typeorm';
+import request from '../../utils/request';
 
 const email = 'tom@111a.com';
 const password = 'abcdefd';
-
-const mutation = (e: string, p: string) => `
-mutation {
-  register(email:"${e}", password:"${p}") {
-    path
-    message
-  }
-}
-`;
 
 let connection: Connection;
 
@@ -33,11 +23,8 @@ beforeAll(async () => {
 describe('Register user', () => {
   it('register success', async () => {
     /** 注册成功 */
-    const response = await request(
-      process.env.TEST_HOST,
-      mutation(email, password),
-    );
-    expect(response).toEqual({ register: null });
+    const response = await request.register(email, password);
+    expect(response.data.data).toEqual({ register: null });
     const users = await User.find({ where: { email } });
     expect(users).toHaveLength(1);
     const [user] = users;
@@ -47,12 +34,9 @@ describe('Register user', () => {
 
   it('email already', async () => {
     /** 邮箱已经存在 */
-    const response2 = await request(
-      process.env.TEST_HOST,
-      mutation(email, password),
-    );
-    expect(response2.register).toHaveLength(1);
-    expect(response2.register[0]).toEqual({
+    const response2 = await request.register(email, password);
+    expect(response2.data.data.register).toHaveLength(1);
+    expect(response2.data.data.register[0]).toEqual({
       path: 'email',
       message: emailAlready,
     });
@@ -60,11 +44,8 @@ describe('Register user', () => {
 
   it('check bad email', async () => {
     /** 错误邮箱 */
-    const response3 = await request(
-      process.env.TEST_HOST,
-      mutation('b', password),
-    );
-    expect(response3).toEqual({
+    const response3 = await request.register('b', password);
+    expect(response3.data.data).toEqual({
       register: [
         {
           path: 'email',
@@ -80,11 +61,8 @@ describe('Register user', () => {
 
   it('check bad password', async () => {
     /** 错误密码 */
-    const response4 = await request(
-      process.env.TEST_HOST,
-      mutation(email, 'ab'),
-    );
-    expect(response4).toEqual({
+    const response4 = await request.register(email, 'ab');
+    expect(response4.data.data).toEqual({
       register: [
         {
           path: 'password',
@@ -96,8 +74,8 @@ describe('Register user', () => {
 
   it('check bad password and email', async () => {
     /** 错误密码 and 错误邮箱 */
-    const response5 = await request(process.env.TEST_HOST, mutation('b', 'ab'));
-    expect(response5).toEqual({
+    const response5 = await request.register('b', 'ab');
+    expect(response5.data.data).toEqual({
       register: [
         {
           path: 'email',

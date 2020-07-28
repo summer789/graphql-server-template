@@ -26,7 +26,6 @@ export const resolvers: IResolvers<any, { req: Request }> = {
       // }
 
       req.session.userId = user.id;
-      console.log(req.session);
       return null;
     },
   },

@@ -1,7 +1,12 @@
 import axios from 'axios';
+import tough from 'tough-cookie';
+import axiosCookieJarSupport from 'axios-cookiejar-support';
 import { User } from '../../entity/User';
 import { Connection } from 'typeorm';
 import { createTypeOrmConnection } from '../../utils/createTypeOrmConnection';
+
+axiosCookieJarSupport(axios);
+const cookieJar = new tough.CookieJar();
 
 let connection: Connection;
 const email = 'bob5@bob.com';
@@ -49,12 +54,13 @@ mutation {
 
 describe('logout', () => {
   test('test logging out a user', async () => {
-    const res = await axios.post(
+    await axios.post(
       process.env.TEST_HOST as string,
       {
         query: loginMutation(email, password),
       },
       {
+        jar: cookieJar,
         withCredentials: true,
       },
     );
@@ -65,6 +71,7 @@ describe('logout', () => {
         query: meQuery,
       },
       {
+        jar: cookieJar,
         withCredentials: true,
       },
     );
@@ -79,6 +86,7 @@ describe('logout', () => {
     await axios.post(
       process.env.TEST_HOST as string,
       {
+        jar: cookieJar,
         query: logoutMutation,
       },
       {
@@ -92,6 +100,7 @@ describe('logout', () => {
         query: meQuery,
       },
       {
+        jar: cookieJar,
         withCredentials: true,
       },
     );

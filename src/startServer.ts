@@ -43,6 +43,7 @@ export const startServer = async () => {
     //   credentials: true,
     //   origin: 'http://127.0.0.1:4000',
     // },
+    // endpoint: '/graphql',
     cors: false,
     port: process.env.NODE_ENV === 'test' ? 3000 : 4000,
   });
